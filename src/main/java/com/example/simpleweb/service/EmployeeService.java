@@ -12,6 +12,8 @@ public interface EmployeeService {
 
     Employee save(Employee theEmployee);
 
+    List<Employee> saveEmployees(List<Employee> employees);
+
     void deleteById(int theId);
 
 }
