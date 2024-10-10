@@ -16,8 +16,6 @@ public class EmployeePageController {
 
     private EmployeeRepository employeeService;
 
-    //    since only one constructor, @Autowired is optional
-//    Constructor injection
     @Autowired
     public EmployeePageController(EmployeeRepository theEmployeeService) {
         employeeService = theEmployeeService;
@@ -33,7 +31,6 @@ public class EmployeePageController {
 //        add to the spring model
         theModel.addAttribute("employees",theEmployees);
 
-//        we need to create a Thymeleaf page list-employees
         return "employees/list-employees";
     }
 

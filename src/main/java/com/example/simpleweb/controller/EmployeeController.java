@@ -36,6 +36,8 @@ public class EmployeeController {
     @PostMapping("/employees/add")
     public Employee addEmployees(@RequestBody Employee employee) {
 
+//        萬一在 JSON 中傳遞 id ...將 id 設置為 0
+//        這是為了強制保存新employee ...而不是更新
         employee.setId(0);
 
         Employee dbEmployee = employeeService.save(employee);
