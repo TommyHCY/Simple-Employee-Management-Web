@@ -4,6 +4,8 @@ import com.example.simpleweb.dto.EmployeeDto;
 import com.example.simpleweb.entity.Employee;
 import com.example.simpleweb.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,20 +40,27 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/add")
-    public Employee addEmployees(@RequestBody EmployeeDto employeeDto) {
+    public ResponseEntity<String> addEmployees(@RequestBody EmployeeDto employeeDto) {
 
-        return employeeService.save(employeeService.setIdZero(employeeDto));
+        employeeService.save(employeeService.convertToEmployee(employeeDto));
+
+        return ResponseEntity.status(HttpStatus.OK).body("added success.");
     }
 
     @PostMapping("/employees/addList")
-    public List<Employee> addListEmployees(@RequestBody List<EmployeeDto> employeesdto) {
+    public ResponseEntity<String> addListEmployees(@RequestBody List<EmployeeDto> employeesdto) {
 
-        List<Employee> employees = employeesdto.stream().map(employeeDto -> {
-            Employee employee = employeeService.setIdZero(employeeDto);
-            return employee;
-        }).toList();
+//        List<Employee> employees = employeesdto.stream().map(employeeDto -> {
+//            Employee employee = employeeService.convertToEmployee(employeeDto);
+//            return employee;
+//        }).toList();
+        employeeService.saveEmployees(employeesdto.stream()
+                .map(employeeDto -> {
+                    Employee employee = employeeService.convertToEmployee(employeeDto);
+                    return employee;
+                }).toList());
 
-        return employeeService.saveEmployees(employees);
+        return ResponseEntity.status(HttpStatus.OK).body("added success.");
     }
 
     @PutMapping("/employees/update")

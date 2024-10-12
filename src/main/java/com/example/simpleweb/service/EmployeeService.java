@@ -17,6 +17,6 @@ public interface EmployeeService {
 
     void deleteById(int theId);
 
-    Employee setIdZero (EmployeeDto employeeDto);
+    Employee convertToEmployee(EmployeeDto employeeDto);
 
 }

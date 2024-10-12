@@ -43,7 +43,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee setIdZero(EmployeeDto employeeDto) {
+    public Employee convertToEmployee(EmployeeDto employeeDto) {
         Employee employee = new Employee();
         employee.setId(0);
         employee.setFirstName(employeeDto.getFirstName());
