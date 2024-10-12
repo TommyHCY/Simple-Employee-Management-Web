@@ -24,13 +24,13 @@ public class EmployeeController {
 
     @GetMapping("/employees/{employeeId}")
     public Employee getEmployee(@PathVariable int employeeId) {
+        try {
+            Employee employee = employeeService.findById(employeeId);
 
-        Employee employee = employeeService.findById(employeeId);
-
-        if (employee == null) {
-            throw new RuntimeException("Employee isn't found: " + employeeId);
+            return employee;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
-        return employee;
     }
 
     @PostMapping("/employees/add")
@@ -48,6 +48,8 @@ public class EmployeeController {
     @PostMapping("/employees/addList")
     public List<Employee> addListEmployees(@RequestBody List<Employee> employees) {
 
+        employees.forEach(employee -> employee.setId(0));
+
         List<Employee> dbEmployees = employeeService.saveEmployees(employees);
 
         return dbEmployees;
@@ -55,32 +57,28 @@ public class EmployeeController {
 
     @PutMapping("/employees/update")
     public Employee updateEmployee (@RequestBody Employee employee) {
+        try {
+            Employee existingEmployee = employeeService.findById(employee.getId());
 
-        Employee existingEmployee = employeeService.findById(employee.getId());
+            Employee dbEmployee = employeeService.save(employee);
 
-        if (existingEmployee == null ) {
-
-            throw new RuntimeException("Doesn't find id: " + employee.getId());
+            return dbEmployee;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
-
-        Employee dbEmployee = employeeService.save(employee);
-
-        return dbEmployee;
     }
 
     @DeleteMapping("/employees/delete/{employeeId}")
     public String deleteEmployee (@PathVariable int employeeId) {
 
-        Employee tempEmployee = employeeService.findById(employeeId);
+        try {
+            Employee tempEmployee = employeeService.findById(employeeId);
 
-        if (tempEmployee == null) {
+            employeeService.deleteById(employeeId);
 
-            throw new RuntimeException("Employee isn't found: " + employeeId);
-
+            return "Delete employee id: " + employeeId;
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
-
-        employeeService.deleteById(employeeId);
-
-        return "Delete employee id: " + employeeId;
     }
 }
