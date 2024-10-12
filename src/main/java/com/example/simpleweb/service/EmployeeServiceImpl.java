@@ -1,6 +1,7 @@
 package com.example.simpleweb.service;
 
 import com.example.simpleweb.dao.EmployeeRepository;
+import com.example.simpleweb.dto.EmployeeDto;
 import com.example.simpleweb.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findById(int theId) {
-        return employeeRepository.findById(theId)
-                .orElseThrow(()->new RuntimeException("Don't find employee id: " + theId));
+        return employeeRepository.findById(theId).orElse(null);
     }
 
     @Override
@@ -40,5 +40,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void deleteById(int theId) {
         employeeRepository.deleteById(theId);
+    }
+
+    @Override
+    public Employee setIdZero(EmployeeDto employeeDto) {
+        Employee employee = new Employee();
+        employee.setId(0);
+        employee.setFirstName(employeeDto.getFirstName());
+        employee.setLastName(employeeDto.getLastName());
+        employee.setEmail(employeeDto.getEmail());
+        employee.setRole(employeeDto.getRole());
+        return employee;
     }
 }
