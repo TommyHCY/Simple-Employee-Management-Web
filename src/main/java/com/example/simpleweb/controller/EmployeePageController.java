@@ -1,23 +1,22 @@
 package com.example.simpleweb.controller;
 
-import com.example.simpleweb.dao.EmployeeRepository;
 import com.example.simpleweb.entity.Employee;
+import com.example.simpleweb.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/employees")
 public class EmployeePageController {
 
-    private EmployeeRepository employeeService;
+    private EmployeeService employeeService;
 
     @Autowired
-    public EmployeePageController(EmployeeRepository theEmployeeService) {
+    public EmployeePageController(EmployeeService theEmployeeService) {
         employeeService = theEmployeeService;
     }
 
@@ -49,7 +48,7 @@ public class EmployeePageController {
     public String showFormForUpdate(@RequestParam("employeeId") int theId, Model theModel) {
 
 //        get the employee from the service
-        Optional<Employee> employee = employeeService.findById(theId);
+        Employee employee = employeeService.findById(theId);
 
 //        set employee in the model to prepopulate the form
         theModel.addAttribute("employee", employee);

@@ -1,8 +1,11 @@
 package com.example.simpleweb.controller;
 
+import com.example.simpleweb.dto.EmployeeDto;
 import com.example.simpleweb.entity.Employee;
 import com.example.simpleweb.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,53 +26,66 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable int employeeId) {
+    public Employee getEmployee(@PathVariable int employeeId) throws Exception {
+
         try {
             Employee employee = employeeService.findById(employeeId);
 
             return employee;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+        } catch (Exception e) {
+
+            throw new Exception(e);
         }
     }
 
     @PostMapping("/employees/add")
-    public Employee addEmployees(@RequestBody Employee employee) {
+    public ResponseEntity<String> addEmployees(@RequestBody EmployeeDto employeeDto) {
 
-//        萬一在 JSON 中傳遞 id ...將 id 設置為 0
-//        這是為了強制保存新employee ...而不是更新
-        employee.setId(0);
+        employeeService.save(employeeService.convertToEmployee(employeeDto));
 
-        Employee dbEmployee = employeeService.save(employee);
-
-        return dbEmployee;
+        return ResponseEntity.status(HttpStatus.OK).body("added success.");
     }
 
     @PostMapping("/employees/addList")
-    public List<Employee> addListEmployees(@RequestBody List<Employee> employees) {
+    public ResponseEntity<String> addListEmployees(@RequestBody List<EmployeeDto> employeesdto) {
 
-        employees.forEach(employee -> employee.setId(0));
+//        List<Employee> employees = employeesdto.stream().map(employeeDto -> {
+//            Employee employee = employeeService.convertToEmployee(employeeDto);
+//            return employee;
+//        }).toList();
+        employeeService.saveEmployees(employeesdto.stream()
+                .map(employeeDto -> {
+                    Employee employee = employeeService.convertToEmployee(employeeDto);
+                    return employee;
+                }).toList());
 
-        List<Employee> dbEmployees = employeeService.saveEmployees(employees);
-
-        return dbEmployees;
+        return ResponseEntity.status(HttpStatus.OK).body("added success.");
     }
 
     @PutMapping("/employees/update")
-    public Employee updateEmployee (@RequestBody Employee employee) {
+    public Employee updateEmployee (@RequestBody Employee employee) throws Exception {
+
         try {
             Employee existingEmployee = employeeService.findById(employee.getId());
 
-            Employee dbEmployee = employeeService.save(employee);
+            Employee dbEmployee = null;
+
+            if (existingEmployee != null) {
+
+                dbEmployee = employeeService.save(employee);
+            }
 
             return dbEmployee;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+        } catch (Exception e) {
+
+            throw new Exception(e);
         }
     }
 
     @DeleteMapping("/employees/delete/{employeeId}")
-    public String deleteEmployee (@PathVariable int employeeId) {
+    public String deleteEmployee (@PathVariable int employeeId) throws Exception {
 
         try {
             Employee tempEmployee = employeeService.findById(employeeId);
@@ -77,8 +93,10 @@ public class EmployeeController {
             employeeService.deleteById(employeeId);
 
             return "Delete employee id: " + employeeId;
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+
+        } catch (Exception e) {
+
+            throw new Exception(e);
         }
     }
 }
