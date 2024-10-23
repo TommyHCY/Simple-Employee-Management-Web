@@ -19,4 +19,5 @@ public interface EmployeeService {
 
     Employee convertToEmployee(EmployeeDto employeeDto);
 
+    EmployeeDto convertToEmployeeDto(Employee employee);
 }

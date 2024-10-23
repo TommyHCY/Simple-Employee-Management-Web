@@ -38,22 +38,22 @@
     </thead>
 
     <tbody>
-    <tr th:each="tempEmployee : ${employees}">
+    <tr th:each="tempEmployee, stat : ${employees}">
 
-      <td th:text="${tempEmployee.firstName}" />
-      <td th:text="${tempEmployee.lastName}" />
-      <td th:text="${tempEmployee.email}" />
-      <td th:text="${tempEmployee.role}" />
+      <td th:text="${tempEmployee.firstName}"></td>
+      <td th:text="${tempEmployee.lastName}"></td>
+      <td th:text="${tempEmployee.email}"></td>
+      <td th:text="${tempEmployee.role}"></td>
 
       <!--                Add "update" button Link-->
       <td>
-        <a th:href="@{/employees/showFormForUpdate(employeeId=${tempEmployee.id})}"
+        <a th:href="@{/employees/showFormForUpdate(employeeId=${employeeIds[stat.index]})}"
            class="btn btn-info btn-sm">
           Update
         </a>
 
         <!--                    Add "delete" button Link-->
-        <a th:href="@{/employees/delete(employeeId=${tempEmployee.id})}"
+        <a th:href="@{/employees/delete(employeeId=${employeeIds[stat.index]})}"
            class="btn btn-danger btn-sm"
            onclick="if (!(confirm('Are you sure you want to delete this employee?'))) return false">
           Delete

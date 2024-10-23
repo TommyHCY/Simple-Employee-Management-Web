@@ -38,9 +38,9 @@ public class EmployeeController {
             Employee employee = employeeService.findById(employeeId);
 
             if (employee == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return ResponseEntity.ok(null);
             }
-            return ResponseEntity.status(HttpStatus.OK).body(employee);
+            return ResponseEntity.ok(employee);
 
         } catch (Exception e) {
 
@@ -57,16 +57,15 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/addList")
-    public ResponseEntity<String> addListEmployees(@Valid @RequestBody List<EmployeeDto> employeesdto) {
+    public ResponseEntity<String> addListEmployees(@Valid @RequestBody List<EmployeeDto> employeesDto) {
 
 //        List<Employee> employees = employeesdto.stream().map(employeeDto -> {
 //            Employee employee = employeeService.convertToEmployee(employeeDto);
 //            return employee;
 //        }).toList();
-        employeeService.saveEmployees(employeesdto.stream()
+        employeeService.saveEmployees(employeesDto.stream()
                 .map(employeeDto -> {
-                    Employee employee = employeeService.convertToEmployee(employeeDto);
-                    return employee;
+                    return employeeService.convertToEmployee(employeeDto);
                 }).toList());
 
         return ResponseEntity.status(HttpStatus.OK).body("added success.");
@@ -81,7 +80,7 @@ public class EmployeeController {
 
             if (existingEmployee == null) {
 
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.ok(null);
             }
 
             Employee employee = employeeService.convertToEmployee(employeeDto);
@@ -105,7 +104,7 @@ public class EmployeeController {
             Employee tempEmployee = employeeService.findById(employeeId);
 
             if (tempEmployee == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.ok(null);
             }
             employeeService.deleteById(employeeId);
 

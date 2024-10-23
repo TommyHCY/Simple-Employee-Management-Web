@@ -15,7 +15,7 @@ import java.util.Map;
 public class GlobeExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<Map<String, List<String>>> handleValidationException(
             MethodArgumentNotValidException validException) {
         List<String> errorMessages = validException.getBindingResult()
@@ -27,7 +27,7 @@ public class GlobeExceptionHandler {
         Map<String, List<String>> errorResponse = new HashMap<>();
         errorResponse.put("errors", errorMessages);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(errorResponse);
     }
 
