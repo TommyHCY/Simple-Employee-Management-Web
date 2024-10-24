@@ -3,16 +3,22 @@ package com.example.simpleweb.controller;
 import com.example.simpleweb.dto.EmployeeDto;
 import com.example.simpleweb.entity.Employee;
 import com.example.simpleweb.service.EmployeeService;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
+@Validated
 public class EmployeeController {
+
     private EmployeeService employeeService;
 
     @Autowired
@@ -21,17 +27,20 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public List<Employee> findAll() {
-        return employeeService.findAll();
+    public ResponseEntity<List<Employee>> findAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(employeeService.findAll());
     }
 
     @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable int employeeId) throws Exception {
+    public ResponseEntity<Employee> getEmployee(@PathVariable @Positive int employeeId) throws Exception {
 
         try {
             Employee employee = employeeService.findById(employeeId);
 
-            return employee;
+            if (employee == null) {
+                return ResponseEntity.ok(null);
+            }
+            return ResponseEntity.ok(employee);
 
         } catch (Exception e) {
 
@@ -40,7 +49,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/add")
-    public ResponseEntity<String> addEmployees(@RequestBody EmployeeDto employeeDto) {
+    public ResponseEntity<String> addEmployees(@Valid @RequestBody EmployeeDto employeeDto) {
 
         employeeService.save(employeeService.convertToEmployee(employeeDto));
 
@@ -48,35 +57,39 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees/addList")
-    public ResponseEntity<String> addListEmployees(@RequestBody List<EmployeeDto> employeesdto) {
+    public ResponseEntity<String> addListEmployees(@Valid @RequestBody List<EmployeeDto> employeesDto) {
 
 //        List<Employee> employees = employeesdto.stream().map(employeeDto -> {
 //            Employee employee = employeeService.convertToEmployee(employeeDto);
 //            return employee;
 //        }).toList();
-        employeeService.saveEmployees(employeesdto.stream()
+        employeeService.saveEmployees(employeesDto.stream()
                 .map(employeeDto -> {
-                    Employee employee = employeeService.convertToEmployee(employeeDto);
-                    return employee;
+                    return employeeService.convertToEmployee(employeeDto);
                 }).toList());
 
         return ResponseEntity.status(HttpStatus.OK).body("added success.");
     }
 
-    @PutMapping("/employees/update")
-    public Employee updateEmployee (@RequestBody Employee employee) throws Exception {
+    @PutMapping("/employees/update/{employeeid}")
+    public ResponseEntity<Employee> updateEmployee (@Valid @RequestBody EmployeeDto employeeDto,@Positive @PathVariable int employeeid)throws Exception {
 
         try {
-            Employee existingEmployee = employeeService.findById(employee.getId());
 
-            Employee dbEmployee = null;
+            Employee existingEmployee = employeeService.findById(employeeid);
 
-            if (existingEmployee != null) {
+            if (existingEmployee == null) {
 
-                dbEmployee = employeeService.save(employee);
+                return ResponseEntity.ok(null);
             }
 
-            return dbEmployee;
+            Employee employee = employeeService.convertToEmployee(employeeDto);
+
+            employee.setId(employeeid);
+
+            Employee updateEmployee = employeeService.save(employee);
+
+            return ResponseEntity.status(HttpStatus.OK).body(updateEmployee);
 
         } catch (Exception e) {
 
@@ -85,14 +98,17 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/employees/delete/{employeeId}")
-    public String deleteEmployee (@PathVariable int employeeId) throws Exception {
+    public ResponseEntity<String> deleteEmployee (@PathVariable @Positive int employeeId) throws Exception {
 
         try {
             Employee tempEmployee = employeeService.findById(employeeId);
 
+            if (tempEmployee == null) {
+                return ResponseEntity.ok(null);
+            }
             employeeService.deleteById(employeeId);
 
-            return "Delete employee id: " + employeeId;
+            return ResponseEntity.status(HttpStatus.OK).body("Delete employee id: " + employeeId);
 
         } catch (Exception e) {
 

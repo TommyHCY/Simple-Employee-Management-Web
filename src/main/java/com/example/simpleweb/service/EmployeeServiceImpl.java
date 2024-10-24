@@ -52,4 +52,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setRole(employeeDto.getRole());
         return employee;
     }
+
+    @Override
+    public EmployeeDto convertToEmployeeDto(Employee employee) {
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName(employee.getFirstName());
+        employeeDto.setLastName(employee.getLastName());
+        employeeDto.setEmail(employee.getEmail());
+        employeeDto.setRole(employee.getRole());
+        return employeeDto;
+    }
 }
